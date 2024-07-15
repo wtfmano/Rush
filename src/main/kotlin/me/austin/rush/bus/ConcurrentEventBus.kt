@@ -1,5 +1,9 @@
-package me.austin.rush
+package me.austin.rush.bus
 
+import me.austin.rush.listener.Listener
+import me.austin.rush.listener.listenerArray
+import me.austin.rush.types.Event
+import me.austin.rush.types.StoppableEvent
 import kotlin.reflect.KClass
 import kotlin.reflect.full.allSuperclasses
 
@@ -103,7 +107,7 @@ open class ConcurrentEventBus : ReflectionEventBus {
         }
     }
 
-    override fun <T : Any> post(event: T): T {
+    override fun <T : Event> post(event: T): T {
         this.subscribers[event::class]?.let { array ->
             for (listener in array) {
                 listener(event)
@@ -113,12 +117,12 @@ open class ConcurrentEventBus : ReflectionEventBus {
         return event
     }
 
-    override fun <T : Cancellable> post(event: T): T {
+    override fun <T : StoppableEvent> post(event: T): T {
         this.subscribers[event::class]?.let { array ->
             for (listener in array) {
                 listener(event)
 
-                if (event.isCancelled) {
+                if (event.isStopped()) {
                     break
                 }
             }
@@ -127,7 +131,7 @@ open class ConcurrentEventBus : ReflectionEventBus {
         return event
     }
 
-    override fun <T : Any> postRecursive(event: T) {
+    override fun <T : Event> postRecursive(event: T) {
         this.subscribers[event::class]?.let { array ->
             for (listener in array) {
                 listener(event)
@@ -138,6 +142,28 @@ open class ConcurrentEventBus : ReflectionEventBus {
             this.subscribers[kClass]?.let { array ->
                 for (listener in array) {
                     listener(event)
+                }
+            }
+        }
+    }
+
+    override fun <T : StoppableEvent> postRecursive(event: T) {
+        this.subscribers[event::class]?.let { list ->
+            for (listener in list) {
+                listener(event)
+
+                if (event.isStopped())
+                    break
+            }
+        }
+
+        for (kClass in event::class.allSuperclasses) {
+            this.subscribers[kClass]?.let { list ->
+                for (listener in list) {
+                    listener(event)
+
+                    if (event.isStopped())
+                        break
                 }
             }
         }

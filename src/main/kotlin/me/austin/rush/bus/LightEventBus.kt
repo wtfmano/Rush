@@ -1,5 +1,8 @@
-package me.austin.rush
+package me.austin.rush.bus
 
+import me.austin.rush.listener.Listener
+import me.austin.rush.types.Event
+import me.austin.rush.types.StoppableEvent
 import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.reflect.KClass
 
@@ -49,7 +52,7 @@ open class LightEventBus : EventBus {
         }
     }
 
-    override fun <T : Any> post(event: T): T {
+    override fun <T : Event> post(event: T): T {
         this.subscribers[event::class]?.let { list ->
             for (listener in list) {
                 listener(event)
@@ -59,12 +62,12 @@ open class LightEventBus : EventBus {
         return event
     }
 
-    override fun <T : Cancellable> post(event: T): T {
+    override fun <T : StoppableEvent> post(event: T): T {
         this.subscribers[event::class]?.let { array ->
             for (listener in array) {
                 listener(event)
 
-                if (event.isCancelled) {
+                if (event.isStopped()) {
                     break
                 }
             }

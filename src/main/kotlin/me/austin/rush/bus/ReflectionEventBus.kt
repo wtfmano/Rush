@@ -1,4 +1,7 @@
-package me.austin.rush
+package me.austin.rush.bus
+
+import me.austin.rush.types.Event
+import me.austin.rush.types.StoppableEvent
 
 /**
  * Event Bus that uses reflection.
@@ -46,5 +49,7 @@ interface ReflectionEventBus : EventBus {
     /**
      * Posts an event and all it's superclasses to all registered listeners
      */
-    fun <T : Any> postRecursive(event: T)
+    fun <T : Event> postRecursive(event: T)
+
+    fun <T : StoppableEvent> postRecursive(event: T)
 }

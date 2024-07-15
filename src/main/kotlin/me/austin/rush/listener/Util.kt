@@ -1,4 +1,4 @@
-package me.austin.rush
+package me.austin.rush.listener
 
 import kotlin.reflect.KCallable
 import kotlin.reflect.KClass

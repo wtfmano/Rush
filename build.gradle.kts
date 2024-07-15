@@ -3,12 +3,12 @@ val coroutinesVersion: String by project
 
 plugins {
     java
-    kotlin("jvm") version "1.9.10"
+    kotlin("jvm") version "2.0.0"
     id("org.jetbrains.dokka") version "1.9.0"
 }
 
 group = "me.austin"
-version = "0.2.3"
+version = "0.2.4"
 
 repositories {
     mavenCentral()
@@ -30,7 +30,7 @@ dependencies {
     implementation(group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version = coroutinesVersion)
 
     // Standard library
-    implementation(kotlin("stdlib", kotlinVersion))
+    implementation(kotlin("stdlib-jdk8", kotlinVersion))
 
     // Annotations
     compileOnly(group = "org.jetbrains", name = "annotations", version = "24.0.1")
@@ -41,12 +41,12 @@ java {
     withJavadocJar()
 
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
+        languageVersion.set(JavaLanguageVersion.of(8))
     }
 }
 
 kotlin {
-    jvmToolchain(17)
+    jvmToolchain(8)
 }
 
 tasks {

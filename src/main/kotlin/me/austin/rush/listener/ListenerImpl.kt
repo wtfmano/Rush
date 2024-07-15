@@ -1,4 +1,4 @@
-package me.austin.rush
+package me.austin.rush.listener
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

@@ -1,4 +1,8 @@
-package me.austin.rush
+package me.austin.rush.bus
+
+import me.austin.rush.listener.Listener
+import me.austin.rush.types.Event
+import me.austin.rush.types.StoppableEvent
 
 /**
  * Basic structure for an event dispatcher.
@@ -67,21 +71,7 @@ interface EventBus {
         }
     }
 
-    /**
-     * Post an event to be processed by the subscribed methods or listener objects.
-     *
-     * @param T Event type.
-     * @param event Instance of [T] to post.
-     */
-    fun <T : Any> post(event: T): T
+    fun <T : Event> post(event: T): T
 
-    /**
-     * Dispatches an event that is cancellable.
-     * When the event is cancelled it will not be posted to any listeners after.
-     *
-     * @param T The type of the [event] posted.
-     * @param event The event which will be posted.
-     * @return [event].
-     */
-    fun <T : Cancellable> post(event: T): T
+    fun <T : StoppableEvent> post(event: T): T
 }

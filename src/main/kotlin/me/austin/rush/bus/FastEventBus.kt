@@ -1,5 +1,9 @@
-package me.austin.rush
+package me.austin.rush.bus
 
+import me.austin.rush.listener.Listener
+import me.austin.rush.listener.listenerList
+import me.austin.rush.types.Event
+import me.austin.rush.types.StoppableEvent
 import kotlin.reflect.full.allSuperclasses
 
 /**
@@ -32,7 +36,7 @@ open class FastEventBus : LightEventBus(), ReflectionEventBus {
         }
     }
 
-    override fun <T : Any> postRecursive(event: T) {
+    override fun <T : Event> postRecursive(event: T) {
         this.subscribers[event::class]?.let { list ->
             for (listener in list) {
                 listener(event)
@@ -43,6 +47,28 @@ open class FastEventBus : LightEventBus(), ReflectionEventBus {
             this.subscribers[kClass]?.let { list ->
                 for (listener in list) {
                     listener(event)
+                }
+            }
+        }
+    }
+
+    override fun <T : StoppableEvent> postRecursive(event: T) {
+        this.subscribers[event::class]?.let { list ->
+            for (listener in list) {
+                listener(event)
+
+                if (event.isStopped())
+                    break
+            }
+        }
+
+        for (kClass in event::class.allSuperclasses) {
+            this.subscribers[kClass]?.let { list ->
+                for (listener in list) {
+                    listener(event)
+
+                    if (event.isStopped())
+                        break
                 }
             }
         }
